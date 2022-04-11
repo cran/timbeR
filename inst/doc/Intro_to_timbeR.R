@@ -54,9 +54,7 @@ ggplot(tree_scaling,aes(x=hih))+
 ## -----------------------------------------------------------------------------
 library(minpack.lm)
 
-bi <-  nlsLM(di ~ dbh*(log(sin((pi/2)*(hih)))/(log(sin((pi/2)*(1.3/h)))))**
-             (b0+b1*sin((pi/2)*(hih))+b2*cos((3*pi/2)*(hih))+b3*(sin((pi/2)*(hih))/(hih))+
-                b4*dbh+b5*(hih)*dbh**0.5+b6*(hih)*h**0.5),
+bi <-  nlsLM(di ~ taper_bi(dbh, h, hih, b0, b1, b2, b3, b4, b5, b6),
            data=tree_scaling,
            start=list(b0=1.8,b1=-0.2,b2=-0.04,b3=-0.9,b4=-0.0006,b5=0.07,b6=-.14))
 summary(bi)
@@ -82,10 +80,7 @@ ggplot(tree_scaling,aes(x=hih))+
 
 
 ## -----------------------------------------------------------------------------
-kozak <- nlsLM(di ~
-                 b0*(dbh**b1)*(h**b2)*((1-hih**(1/4))/(1-(p^(1/3))))**(b3*hih**4+b4*(1/exp(dbh/h))+b5*((1-hih**(1/4))/(1-(p^(1/3))))**0.1+b6*
-                                                                         (1/dbh)+b7*(h**(1-
-                                                                                           hih**(1/3)))+b8*((1-hih**(1/4))/(1-(p^(1/3))))),
+kozak <- nlsLM(di ~ taper_kozak(dbh, h, hih, b0, b1, b2, b3, b4, b5, b6, b7, b8, p),
                start=list(b0=1.00,b1=.97,b2=.03,b3=.49,b4=-
                             0.87,b5=0.50,b6=3.88,b7=0.03,b8=-0.19, p = .1),
                data = tree_scaling,
@@ -165,7 +160,7 @@ kozak_vol(dbh, h, coef_kozak, p_kozak, hi, h0)
 
 ## -----------------------------------------------------------------------------
 assortments <- data.frame(
-  NAME = c('15-25','4-15'),
+  NAME = c('> 15','4-15'),
   SED = c(15,4),
   MINLENGTH = c(2.65,2),
   MAXLENGTH = c(2.65,4.2),

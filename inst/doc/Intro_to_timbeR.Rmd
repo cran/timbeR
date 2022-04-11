@@ -21,14 +21,14 @@ The `timbeR` package has functions to estimate diameters along the stem, height 
 The possible models to be used are:  
   
 - 5th degree polynomial taper function (Schöepfer, 1966)
-$$\frac{d_i}{dbh}=\beta_0\frac{h_i}{h}+\beta_1\frac{h_i}{h}^2+\beta_2\frac{h_i}{h}^3+\beta_3\frac{h_i}{h}^4+\beta_4\frac{h_i}{h}^5$$
+$$\frac{d_i}{dbh}=\beta_0\frac{h_i}{h}+\beta_1\left(\frac{h_i}{h}\right)^2+\beta_2\left(\frac{h_i}{h}\right)^3+\beta_3\left(\frac{h_i}{h}\right)^4+\beta_4\left(\frac{h_i}{h}\right)^5$$
   
 - Kozak (2004) variable-form taper model
-$$d_i = \beta_0dap^{\beta_1}\left[\frac{1-\left(\frac{h_i}{ht}\right)^{1/4}}{1-p^{1/4}}\right]^{\beta_2+\beta_3\left(\frac{1}{e^{dap/ht}}\right)+\beta_4dap^{\left[\frac{1-\left(\frac{h_i}{ht}\right)^{1/4}}{1-p^{1/4}}\right]}+\beta_5\left[\frac{1-\left(\frac{h_i}{ht}\right)^{1/4}}{1-p^{1/4}}\right]^{dap/ht}}$$
+$$d_i = \beta_0dbh^{\beta_1}\left[\frac{1-\left(\frac{h_i}{ht}\right)^{1/4}}{1-p^{1/4}}\right]^{\beta_2+\beta_3\left(\frac{1}{e^{dbh/ht}}\right)+\beta_4dbh^{\left[\frac{1-\left(\frac{h_i}{ht}\right)^{1/4}}{1-p^{1/4}}\right]}+\beta_5\left[\frac{1-\left(\frac{h_i}{ht}\right)^{1/4}}{1-p^{1/4}}\right]^{dbh/ht}}$$
   
 - Bi (2000) trigonometric variable-form taper model
-$$d_i=dap\left[ \left( \frac{log\;sin \left( \frac{\pi}{2} \frac{h_i}{ht} \right)}
-{log\;sin \left( \frac{\pi}{2} \frac{1,3}{ht} \right)} \right) ^{\beta_0+\beta_1sin\left(\frac{\pi}{2}\frac{h_i}{ht}\right)+\beta_2sin\left(\frac{3\pi}{2}\frac{h_i}{ht}\right)+\beta_3sin\left(\frac{\pi}{2}\frac{h_i}{ht}\right)/\frac{h_i}{ht}+\beta_4dap+\beta_5\frac{h_i}{ht}\sqrt{dap}+\beta_6\frac{h_i}{ht}\sqrt{ht}}
+$$d_i=dbh\left[ \left( \frac{log\;sin \left( \frac{\pi}{2} \frac{h_i}{ht} \right)}
+{log\;sin \left( \frac{\pi}{2} \frac{1,3}{ht} \right)} \right) ^{\beta_0+\beta_1sin\left(\frac{\pi}{2}\frac{h_i}{ht}\right)+\beta_2cos\left(\frac{3\pi}{2}\frac{h_i}{ht}\right)+\beta_3sin\left(\frac{\pi}{2}\frac{h_i}{ht}\right)/\frac{h_i}{ht}+\beta_4dbh+\beta_5\frac{h_i}{ht}\sqrt{dbh}+\beta_6\frac{h_i}{ht}\sqrt{ht}}
 \right]$$
   
 where:  
@@ -102,9 +102,7 @@ Let's see if we can do better with the Bi model.Due to its non-linear nature, we
 ```{r}
 library(minpack.lm)
 
-bi <-  nlsLM(di ~ dbh*(log(sin((pi/2)*(hih)))/(log(sin((pi/2)*(1.3/h)))))**
-             (b0+b1*sin((pi/2)*(hih))+b2*cos((3*pi/2)*(hih))+b3*(sin((pi/2)*(hih))/(hih))+
-                b4*dbh+b5*(hih)*dbh**0.5+b6*(hih)*h**0.5),
+bi <-  nlsLM(di ~ taper_bi(dbh, h, hih, b0, b1, b2, b3, b4, b5, b6),
            data=tree_scaling,
            start=list(b0=1.8,b1=-0.2,b2=-0.04,b3=-0.9,b4=-0.0006,b5=0.07,b6=-.14))
 summary(bi)
@@ -132,10 +130,7 @@ ggplot(tree_scaling,aes(x=hih))+
   
 The Bi model performed better than the polynomial function, based on the RMSE value. However, we still have heteroscedasticity in the residues. Let's see what we get by adjusting the Kozak (2004) model. We will treat the `p` parameter of this model as one more to be estimated using the `nlsLM` function.  
 ```{r}
-kozak <- nlsLM(di ~
-                 b0*(dbh**b1)*(h**b2)*((1-hih**(1/4))/(1-(p^(1/3))))**(b3*hih**4+b4*(1/exp(dbh/h))+b5*((1-hih**(1/4))/(1-(p^(1/3))))**0.1+b6*
-                                                                         (1/dbh)+b7*(h**(1-
-                                                                                           hih**(1/3)))+b8*((1-hih**(1/4))/(1-(p^(1/3))))),
+kozak <- nlsLM(di ~ taper_kozak(dbh, h, hih, b0, b1, b2, b3, b4, b5, b6, b7, b8, p),
                start=list(b0=1.00,b1=.97,b2=.03,b3=.49,b4=-
                             0.87,b5=0.50,b6=3.88,b7=0.03,b8=-0.19, p = .1),
                data = tree_scaling,
@@ -256,12 +251,12 @@ The assortment table must contain five columns, in order: the product name, the 
   
 | Name  | SED | MINLENGTH | MAXLENGTH | LOSS |
 |:-----:|:---:|:---------:|:---------:|:----:|
-| 15-18 |  15 |    2.65   |    2.65   | 5    |
+| > 15 |  15 |    2.65   |    2.65   | 5    |
 | 4-15  |  4  |     2     |    4.2    | 5    |
   
 ```{r}
 assortments <- data.frame(
-  NAME = c('15-25','4-15'),
+  NAME = c('> 15','4-15'),
   SED = c(15,4),
   MINLENGTH = c(2.65,2),
   MAXLENGTH = c(2.65,4.2),
@@ -289,7 +284,7 @@ kozak_logs_plot(dbh, h, coef_kozak, p_kozak, assortments)
 
 ### Using `timbeR` functions at forest inventory scale  
 
-Log estimation functions are performed one tree at a time. Applying these functions to multiple trees can be performed in different ways. Below are some examples using the base R function `mapply` and using `pmap` function from `purr` package.  
+Log estimation functions are performed one tree at a time. Applying these functions to multiple trees can be performed in different ways. Below are some examples using the base R function `mapply` and using `pmap` function from `purrr` package.  
   
 ```{r}
 # Using mapply
@@ -340,3 +335,10 @@ tree_data %>%
   unnest(assortment_vol)
 ```
 
+### References  
+
+Bi, H. (2000). Trigonometric variable-form taper equations for Australian eucalypts. Forest Science, 46(3), 397-409.  
+
+Kozak, A. (2004). My last words on taper equations. The Forestry Chronicle, 80(4), 507-515.  
+
+Schöepfer, W. (1966). Automatisierung dês Massen, Sorten und Wertberechung stender Waldbestande Schriftenreihe Bad. [S.I.]: Wurtt-Forstl.  

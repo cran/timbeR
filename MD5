@@ -1,6 +1,7 @@
-adf43e7c569bbc1dfd090ced0b16850f *DESCRIPTION
+51250dd0f5545ddef914ea8c5e33e7da *DESCRIPTION
 8c14dc9c08cc635ddf9874ff48ad221e *LICENSE
 3b117ec6d0551eb3162dc7d266a2f880 *NAMESPACE
+9fbda16be3d5bf6c9654554d4dcc3ea2 *NEWS.md
 62867e4da539015507f0845bf8f9e563 *R/bi_di.R
 fc327b70a43a3d98bda11e185041d8b5 *R/bi_hi.R
 71060d90cd890cf2f9c7dcde9fc9a7d0 *R/bi_logs.R
@@ -21,12 +22,12 @@ b35a1f06ae8e64880942f9941953f8c3 *R/taper_bi.R
 aaea1ebc692f2e8728e282cc7a6a34b2 *R/taper_kozak.R
 309aa62bfc7ef27ae6da8c5d3a643f19 *R/tree_scaling-data.R
 b56ff2b193ecba52f9ec7f3b10cca008 *R/utils-pipe.R
-96587c04672c1c7db071013a5cdff799 *README.md
+6c7a86966df5b0b1c117e18d6e4b9968 *README.md
 96cf75b38452a610a3e6777294f94395 *build/vignette.rds
 39b4815efe0de62b6b57d235db7745dc *data/tree_scaling.rda
-33d413d8c7a76a000ac852386e596f7d *inst/doc/Intro_to_timbeR.R
-4d83f214d5b73ae69f2fcf2428a9f979 *inst/doc/Intro_to_timbeR.Rmd
-5feb659375d3d997d35ebcf9f418092b *inst/doc/Intro_to_timbeR.html
+065b5ece63ae32ea9cd4fcbdbc238365 *inst/doc/Intro_to_timbeR.R
+62b228caab825cf31b25d6fee7a1ef85 *inst/doc/Intro_to_timbeR.Rmd
+664a56635b894cc936df312379677ef3 *inst/doc/Intro_to_timbeR.html
 2d616b721b393433ae79ab2f695868a0 *man/bi_di.Rd
 7b539746c104d4e583f54970981d5bc6 *man/bi_hi.Rd
 597612a487836f61569f297b5b9570a8 *man/bi_logs.Rd
@@ -34,6 +35,7 @@ b56ff2b193ecba52f9ec7f3b10cca008 *R/utils-pipe.R
 4c56191ac1d3326f4a4ef057d63e49bb *man/bi_vol.Rd
 d6ff5f88d40404ca23be41e432f90287 *man/figures/README-example-1.png
 34f0b729347259d3a6351dc15f48df3b *man/figures/README-unnamed-chunk-6-1.png
+d6ff5f88d40404ca23be41e432f90287 *man/figures/README-unnamed-chunk-7-1.png
 a774c35d5c6f8c2245cba5276746ccac *man/kozak_di.Rd
 5e9e6adc672df7b06d692e7eaf0ca51d *man/kozak_hi.Rd
 e303431cfc3ddaa52846247462ede523 *man/kozak_logs.Rd
@@ -49,4 +51,4 @@ e69a3dbccdaeaa960645232bbd79f670 *man/select_and_remove.Rd
 9a192324d3a134d72d910cfe88c6e59b *man/taper_bi.Rd
 930da44ba0ebf85746a9668fcc8beefe *man/taper_kozak.Rd
 b81eb69a3545ce1194f859bede51be93 *man/tree_scaling.Rd
-4d83f214d5b73ae69f2fcf2428a9f979 *vignettes/Intro_to_timbeR.Rmd
+62b228caab825cf31b25d6fee7a1ef85 *vignettes/Intro_to_timbeR.Rmd
